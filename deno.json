@@ -1,12 +1,17 @@
 {
   "tasks": {
-    "dev": "deno run --env-file -A src/main.ts "
+    "dev": "deno run --allow-read --allow-env --allow-net --allow-run --env src/main.ts",
+    "api": "deno run --allow-read --allow-env --allow-net --allow-run --env src/api.ts"
   },
   "imports": {
-    "@modelcontextprotocol/sdk": "npm:@modelcontextprotocol/sdk@^1.0.3",
+    "@modelcontextprotocol/sdk/": "npm:/@modelcontextprotocol/sdk/",
     "@std/assert": "jsr:@std/assert@1",
     "openai": "npm:openai@^4.76.1",
     "zod": "npm:zod@^3.24.1",
-    "zod-to-json-schema": "npm:zod-to-json-schema@^3.23.5"
+    "zod-to-json-schema": "npm:zod-to-json-schema@^3.23.5",
+    "oak": "https://deno.land/x/oak@v12.6.1/mod.ts"
+  },
+  "compilerOptions": {
+    "lib": ["deno.window", "deno.ns"]
   }
 }

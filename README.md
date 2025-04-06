@@ -1,25 +1,71 @@
-# Intro
+# MCP Client API
 
-This is a simple example of how to use the Model Context Protocol (MCP) with OpenAI's API to create a simple agent acting from a chat context. Feel free to use this as a starting point for your own projects.
+Esta é uma API REST que permite executar comandos MCP (Model Context Protocol) remotamente.
 
-# Setup Guide
+## Configuração
 
-- Ensure Deno v2 is installed
-- Run `deno install` to install dependencies
-- Copy `.env.example` to `.env` and fill in the values
-  - You can choose any MCP server you like - bring your own or use one from the official [MCP server list](https://github.com/modelcontextprotocol/servers/tree/main)
-- Run `deno run dev` to start the application
+1. Copie o arquivo `.env.example` para `.env` e configure as variáveis de ambiente necessárias:
+   ```bash
+   cp .env.example .env
+   ```
 
-# Warning
+2. Configure as seguintes variáveis no arquivo `.env`:
+   - `OPENAI_API_KEY`: Sua chave de API do OpenAI
+   - `MCP_SERVER_COMMAND`: Comando para iniciar o servidor MCP (geralmente "npx")
+   - `MCP_SERVER_ARGS`: Argumentos para o servidor MCP (exemplo: '["@playwright/mcp@latest"]')
+   - `OPENAI_MODEL`: Modelo OpenAI a ser usado (opcional, padrão: "gpt-4-turbo-preview")
 
-_**Chat messages are appended and currently the entire conversation is always sent to the server. This can rack up a lot of tokens and cost a lot of money, depending on the length of the conversation, the model you are using, and the size of the context.**_
+## Instalação
 
-# Limitations
+```bash
+# Instalar dependências
+deno cache src/api.ts
+```
 
-This implementation currently only supports tool call responses of type `text`. Other resource can be implemented in `applyToolCallIfExists` in [src/openai-utils.ts](src/openai-utils.ts).
+## Executando a API
 
-# Notes
+```bash
+deno task api
+```
 
-You latest messages are saved in `messages.json` for debugging purposes. These messages will be overwritten every time you run the application, so make sure to create a copy of the file before running the application again, if you want to keep the previous messages.
+A API estará disponível em `http://localhost:8000`.
 
-If you want to run the application in debug mode, set the `DEBUG` environment variable to `true` in your `.env` file. This will print out more information about the messages and tool calls.
+## Endpoints
+
+### Listar Ferramentas Disponíveis
+
+```http
+GET /tools
+```
+
+Retorna uma lista de todas as ferramentas MCP disponíveis.
+
+### Executar uma Ferramenta
+
+```http
+POST /tools/:toolName
+```
+
+Executa uma ferramenta MCP específica.
+
+Parâmetros:
+- `:toolName`: Nome da ferramenta a ser executada
+- `body`: Objeto JSON com os argumentos necessários para a ferramenta
+
+Exemplo de uso:
+
+```bash
+# Listar ferramentas disponíveis
+curl http://localhost:8000/tools
+
+# Executar uma ferramenta
+curl -X POST http://localhost:8000/tools/mcp_playwright_browser_navigate \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com"}'
+```
+
+## Notas de Segurança
+
+- A API está configurada com CORS permitindo todas as origens (`*`)
+- Recomenda-se implementar autenticação e autorização antes de usar em produção
+- As chaves de API e outras credenciais sensíveis devem ser mantidas seguras
